@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<!-- saved from url=(0064)file:///C:/Users/muham/Downloads/Consyst_OpportunityBoard_3.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Consyst: Sales &amp; Pre-Sales Open Opportunity Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+  :root {
+    --bg:#0b0f1a; --surface:#111827; --surface2:#1a2235; --border:#1e2d45;
+    --accent:#1d6af5; --accent2:#0ea5e9; --text:#e8edf5; --muted:#6b7a99;
+    --red:#ef4444; --red-soft:rgba(239,68,68,0.13);
+    --amber:#f59e0b; --amber-soft:rgba(245,158,11,0.12);
+    --green:#22c55e; --green-soft:rgba(34,197,94,0.10);
+    --purple:#a855f7; --purple-soft:rgba(168,85,247,0.12);
+    --iiotnext:#06b6d4; --iiotnext-soft:rgba(6,182,212,0.13);
+    --row-h: calc((100vh - 168px) / 13);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;overflow:hidden;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;display:flex;flex-direction:column;}
+
+  header{height:38px;min-height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--surface);border-bottom:2px solid var(--border);flex-shrink:0;}
+  .logo-area{display:flex;align-items:center;gap:10px;}
+  .logo-dot{width:9px;height:9px;background:var(--accent);border-radius:50%;box-shadow:0 0 7px var(--accent);animation:pulse 2s infinite;flex-shrink:0;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .header-title{font-size:15px;font-weight:800;letter-spacing:.2px;white-space:nowrap;}
+  .clock{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent2);white-space:nowrap;}
+
+  .toolbar{height:32px;min-height:32px;display:flex;align-items:center;gap:7px;padding:0 18px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
+  .btn{display:flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);transition:all .15s;white-space:nowrap;height:22px;}
+  .btn:hover{border-color:var(--accent);color:var(--accent);}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn.primary:hover{background:#1a5fd9;}
+  .btn.excel{background:rgba(34,197,94,.12);border-color:var(--green);color:var(--green);}
+  .legend{display:flex;align-items:center;gap:9px;margin-left:auto;}
+  .li{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--muted);}
+  .ld{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+  .stats-bar{height:28px;min-height:28px;display:flex;align-items:center;gap:7px;padding:0 18px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;}
+  .stat{display:flex;align-items:center;gap:5px;padding:1px 9px;border-radius:4px;background:var(--surface);border:1px solid var(--border);font-size:10.5px;height:20px;}
+  .stat .v{font-weight:800;font-size:13px;}
+
+  .split-wrap{display:flex;flex:1;overflow:hidden;min-height:0;}
+  .col{flex:1;overflow:hidden;display:flex;flex-direction:column;border-right:1px solid var(--border);}
+  .col:last-child{border-right:none;}
+  .col-label{height:22px;min-height:22px;display:flex;align-items:center;padding:0 12px;background:var(--surface);border-bottom:1px solid var(--border);font-size:9.5px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase;flex-shrink:0;}
+  .col-scroll{overflow:hidden;flex:1;display:flex;flex-direction:column;}
+
+  table{width:100%;border-collapse:collapse;table-layout:fixed;}
+  thead th{padding:0 8px;height:24px;background:var(--surface2);font-size:9.5px;font-weight:700;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;border-bottom:2px solid var(--border);text-align:left;overflow:hidden;white-space:nowrap;}
+  thead th:first-child{text-align:center;}
+  .c-sl{width:30px;}.c-cust{width:18%;}.c-crm{width:88px;}.c-date{width:95px;}.c-type{width:76px;}.c-act{width:46px;}
+
+  tbody tr{border-bottom:1px solid rgba(30,45,69,.7);transition:background .1s;cursor:grab;height:var(--row-h);max-height:var(--row-h);}
+  tbody tr:active{cursor:grabbing;}
+  tbody tr:hover{background:var(--surface2);}
+  tbody tr.dragging{opacity:.35;}
+  tbody tr.drag-over{box-shadow:inset 0 2px 0 var(--accent);}
+
+  td{padding:0 8px;font-size:12.5px;vertical-align:middle;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  td:first-child{text-align:center;}
+
+  .sl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--muted);width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;background:var(--surface2);border:1px solid var(--border);}
+  .crm{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--accent2);}
+
+  .badge{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9.5px;font-weight:700;letter-spacing:.3px;}
+  .badge-BQ{background:var(--amber-soft);color:var(--amber);}
+  .badge-JIH{background:var(--green-soft);color:var(--green);}
+  .badge-Tender{background:var(--purple-soft);color:var(--purple);}
+  .badge-IIoTNext{background:var(--iiotnext-soft);color:var(--iiotnext);}
+
+  tr.hi-pri{background:var(--red-soft)!important;}
+  tr.hi-pri td{color:#fca5a5;}
+  tr.hi-pri .sl{background:var(--red);color:#fff;border-color:var(--red);}
+  tr.hi-pri .crm{color:#fca5a5;}
+  tr.hi-pri:hover{background:rgba(239,68,68,.2)!important;}
+  tr.iiot-row{background:rgba(6,182,212,.05)!important;}
+  tr.iiot-row:hover{background:rgba(6,182,212,.1)!important;}
+  tr.iiot-row.hi-pri{background:var(--red-soft)!important;}
+
+  .date-warn{color:var(--amber);font-weight:600;}
+  .date-over{color:var(--red);font-weight:600;}
+
+  .row-actions{display:flex;gap:2px;opacity:0;transition:opacity .15s;}
+  tbody tr:hover .row-actions{opacity:1;}
+  .abt{background:none;border:none;cursor:pointer;font-size:11px;color:var(--muted);padding:2px 3px;border-radius:3px;transition:all .1s;line-height:1;}
+  .abt:hover{background:var(--surface);color:var(--text);}
+
+  ::-webkit-scrollbar{width:0;}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:500px;max-width:95vw;padding:24px;position:relative;}
+  .modal h2{font-size:16px;font-weight:700;margin-bottom:16px;}
+  .fr{display:flex;gap:10px;margin-bottom:12px;}
+  .fg{display:flex;flex-direction:column;gap:4px;flex:1;}
+  .fg label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+  .fg input,.fg select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;}
+  .fg input:focus,.fg select:focus{outline:none;border-color:var(--accent);}
+  .fg select option{background:var(--surface2);}
+  .mf{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+  .xbtn{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:17px;cursor:pointer;}
+  .ftog{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;font-size:12px;user-select:none;}
+  .ftog input{accent-color:var(--red);width:13px;height:13px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-area">
+    <div class="logo-dot"></div>
+    <div class="header-title">Consyst: Sales &amp; Pre-Sales Open Opportunity Dashboard</div>
+  </div>
+  <div class="clock" id="clock">16:22:56  ·  29 Jun 2026</div>
+</header>
+<div class="toolbar">
+  <button class="btn primary" onclick="openModal()">＋ Add</button>
+  <button class="btn excel" onclick="exportExcel()">↓ Excel</button>
+  <button class="btn" onclick="importTrigger()">↑ Upload Excel</button>
+  <input type="file" id="importFile" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)">
+  <div class="legend">
+    <div class="li"><div class="ld" style="background:var(--red)"></div>High Priority</div>
+    <div class="li"><div class="ld" style="background:var(--amber)"></div>BQ</div>
+    <div class="li"><div class="ld" style="background:var(--green)"></div>JIH</div>
+    <div class="li"><div class="ld" style="background:var(--purple)"></div>Tender</div>
+    <div class="li"><div class="ld" style="background:var(--iiotnext)"></div>IIoTNext</div>
+  </div>
+</div>
+<div class="stats-bar" id="statsBar"><div class="stat"><span class="v" style="color:var(--text)">22</span>Total</div><div class="stat"><span class="v" style="color:var(--red)">5</span>🔴 Priority</div><div class="stat"><span class="v" style="color:var(--green)">2</span>JIH</div><div class="stat"><span class="v" style="color:var(--amber)">20</span>BQ</div><div class="stat"><span class="v" style="color:var(--purple)">0</span>Tender</div><div class="stat"><span class="v" style="color:var(--iiotnext)">0</span>IIoTNext</div></div>
+<div class="split-wrap">
+  <div class="col" id="colA">
+    <div class="col-label">◀  Priority 1–13</div>
+    <div class="col-scroll">
+      <table><thead><tr>
+        <th class="c-sl">#</th><th class="c-cust">Customer</th><th class="c-name">Opportunity</th>
+        <th class="c-crm">CRM ID</th><th class="c-date">Target Date</th><th class="c-type">Type</th><th class="c-act"></th>
+      </tr></thead><tbody id="tbodyA"><tr class="hi-pri" draggable="true" ondragstart="dStart(event,27)" ondragover="dOver(event)" ondrop="dDrop(event,27)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">1</span></td>
+    <td class="c-cust" style="font-weight:600">Rakan</td>
+    <td class="c-name" title="FD Fan Local Control Panels">FD Fan Local Control Panels</td>
+    <td class="c-crm"><span class="crm">2026-00024</span></td>
+    <td class="c-date date-warn" style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">29 Jun 2026 (0d)</td>
+    <td class="c-type"><span class="badge badge-JIH">JIH</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(27)">✏️</button><button class="abt" onclick="toggleFlag(27)">🏳</button></div></td>
+  </tr><tr class="hi-pri" draggable="true" ondragstart="dStart(event,41)" ondragover="dOver(event)" ondrop="dDrop(event,41)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">2</span></td>
+    <td class="c-cust" style="font-weight:600">Indorama</td>
+    <td class="c-name" title="Ex Proof Container with SCADA, RTU, GC">Ex Proof Container with SCADA, RTU, GC</td>
+    <td class="c-crm"><span class="crm">2026-00119</span></td>
+    <td class="c-date date-warn" style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">30 Jun 2026 (1d)</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(41)">✏️</button><button class="abt" onclick="toggleFlag(41)">🏳</button></div></td>
+  </tr><tr class="hi-pri" draggable="true" ondragstart="dStart(event,36)" ondragover="dOver(event)" ondrop="dDrop(event,36)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">3</span></td>
+    <td class="c-cust" style="font-weight:600">MECC</td>
+    <td class="c-name" title="RTUs &amp; FGS PLC FLOWLINES">RTUs &amp; FGS PLC FLOWLINES</td>
+    <td class="c-crm"><span class="crm">2026-00126</span></td>
+    <td class="c-date date-warn" style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">01 Jul 2026 (2d)</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(36)">✏️</button><button class="abt" onclick="toggleFlag(36)">🏳</button></div></td>
+  </tr><tr class="hi-pri" draggable="true" ondragstart="dStart(event,31)" ondragover="dOver(event)" ondrop="dDrop(event,31)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">4</span></td>
+    <td class="c-cust" style="font-weight:600">Eram</td>
+    <td class="c-name" title="Control System for AHU">Control System for AHU</td>
+    <td class="c-crm"><span class="crm">2026-00140</span></td>
+    <td class="c-date date-warn" style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">01 Jul 2026 (2d)</td>
+    <td class="c-type"><span class="badge badge-JIH">JIH</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(31)">✏️</button><button class="abt" onclick="toggleFlag(31)">🏳</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,34)" ondragover="dOver(event)" ondrop="dDrop(event,34)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">5</span></td>
+    <td class="c-cust" style="font-weight:600">HEISCO</td>
+    <td class="c-name" title="RTUs &amp; FGS PLC FLOWLINES">RTUs &amp; FGS PLC FLOWLINES</td>
+    <td class="c-crm"><span class="crm">2026-00136</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">04 Aug 2026</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(34)">✏️</button><button class="abt" onclick="toggleFlag(34)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,37)" ondragover="dOver(event)" ondrop="dDrop(event,37)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">6</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="AL AMERAT Wilayat (Package 3) - Al Hajir &amp; Deem Area Hassan Allam">AL AMERAT Wilayat (Package 3) - Al Hajir &amp; Deem Area Hassan Allam</td>
+    <td class="c-crm"><span class="crm">2026-00130</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">10 Jul 2026</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(37)">✏️</button><button class="abt" onclick="toggleFlag(37)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,33)" ondragover="dOver(event)" ondrop="dDrop(event,33)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">7</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="AL AMERAT Wilayat (Package 3) Al Nahdah &amp; Deem Area Hassan Allam">AL AMERAT Wilayat (Package 3) Al Nahdah &amp; Deem Area Hassan Allam</td>
+    <td class="c-crm"><span class="crm">2026-00137</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">10 Jul 2026</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(33)">✏️</button><button class="abt" onclick="toggleFlag(33)">🚩</button></div></td>
+  </tr><tr class="hi-pri" draggable="true" ondragstart="dStart(event,32)" ondragover="dOver(event)" ondrop="dDrop(event,32)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">8</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="NWA Project">NWA Project</td>
+    <td class="c-crm"><span class="crm">2026-00138</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">10 Jul 2026</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(32)">✏️</button><button class="abt" onclick="toggleFlag(32)">🏳</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,30)" ondragover="dOver(event)" ondrop="dDrop(event,30)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">9</span></td>
+    <td class="c-cust" style="font-weight:600">Ahmadiah</td>
+    <td class="c-name" title="MPW RA/295 Rainwater">MPW RA/295 Rainwater</td>
+    <td class="c-crm"><span class="crm">2026-00142</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">13 Jul 2026</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(30)">✏️</button><button class="abt" onclick="toggleFlag(30)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,45)" ondragover="dOver(event)" ondrop="dDrop(event,45)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">10</span></td>
+    <td class="c-cust" style="font-weight:600">KOC</td>
+    <td class="c-name" title="FT SCADA Upgrade-Jurassic Production Facilities">FT SCADA Upgrade-Jurassic Production Facilities</td>
+    <td class="c-crm"><span class="crm">2026-00095</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(45)">✏️</button><button class="abt" onclick="toggleFlag(45)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,26)" ondragover="dOver(event)" ondrop="dDrop(event,26)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">11</span></td>
+    <td class="c-cust" style="font-weight:600">HONDA</td>
+    <td class="c-name" title="Air Compressor Shutoff Valve">Air Compressor Shutoff Valve</td>
+    <td class="c-crm"><span class="crm">2026-00147</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(26)">✏️</button><button class="abt" onclick="toggleFlag(26)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,28)" ondragover="dOver(event)" ondrop="dDrop(event,28)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">12</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="AQUINEX SEED FACILITY">AQUINEX SEED FACILITY</td>
+    <td class="c-crm"><span class="crm">2026-00146</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(28)">✏️</button><button class="abt" onclick="toggleFlag(28)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,29)" ondragover="dOver(event)" ondrop="dDrop(event,29)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">13</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="DCP AT SULTAN HAITHAM CITY">DCP AT SULTAN HAITHAM CITY</td>
+    <td class="c-crm"><span class="crm">2026-00135</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(29)">✏️</button><button class="abt" onclick="toggleFlag(29)">🚩</button></div></td>
+  </tr></tbody></table>
+    </div>
+  </div>
+  <div class="col" id="colB">
+    <div class="col-label">▶  Priority 14–22</div>
+    <div class="col-scroll">
+      <table><thead><tr>
+        <th class="c-sl">#</th><th class="c-cust">Customer</th><th class="c-name">Opportunity</th>
+        <th class="c-crm">CRM ID</th><th class="c-date">Target Date</th><th class="c-type">Type</th><th class="c-act"></th>
+      </tr></thead><tbody id="tbodyB"><tr class="" draggable="true" ondragstart="dStart(event,35)" ondragover="dOver(event)" ondrop="dDrop(event,35)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">14</span></td>
+    <td class="c-cust" style="font-weight:600">CSL</td>
+    <td class="c-name" title="Automation of gas distribution system">Automation of gas distribution system</td>
+    <td class="c-crm"><span class="crm">2026-00134</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(35)">✏️</button><button class="abt" onclick="toggleFlag(35)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,38)" ondragover="dOver(event)" ondrop="dDrop(event,38)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">15</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="SCADA – Al Shorouq Infrastructure Project, Salalah">SCADA – Al Shorouq Infrastructure Project, Salalah</td>
+    <td class="c-crm"><span class="crm">2026-00128</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(38)">✏️</button><button class="abt" onclick="toggleFlag(38)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,39)" ondragover="dOver(event)" ondrop="dDrop(event,39)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">16</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="Mark V system to historian-Manah Power Plant">Mark V system to historian-Manah Power Plant</td>
+    <td class="c-crm"><span class="crm">2026-00129</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(39)">✏️</button><button class="abt" onclick="toggleFlag(39)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,40)" ondragover="dOver(event)" ondrop="dDrop(event,40)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">17</span></td>
+    <td class="c-cust" style="font-weight:600">Petrovision</td>
+    <td class="c-name" title="2 new RCC for NAMA Water Services">2 new RCC for NAMA Water Services</td>
+    <td class="c-crm"><span class="crm">2026-00124</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(40)">✏️</button><button class="abt" onclick="toggleFlag(40)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,42)" ondragover="dOver(event)" ondrop="dDrop(event,42)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">18</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="Gulfar- Netwrok Instruments Sultan Haitam">Gulfar- Netwrok Instruments Sultan Haitam</td>
+    <td class="c-crm"><span class="crm">2026-00111</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(42)">✏️</button><button class="abt" onclick="toggleFlag(42)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,43)" ondragover="dOver(event)" ondrop="dDrop(event,43)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">19</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="OPC Server upgrade STOMO">OPC Server upgrade STOMO</td>
+    <td class="c-crm"><span class="crm">2026-00093</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(43)">✏️</button><button class="abt" onclick="toggleFlag(43)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,44)" ondragover="dOver(event)" ondrop="dDrop(event,44)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">20</span></td>
+    <td class="c-cust" style="font-weight:600">INNOMOTION</td>
+    <td class="c-name" title="IoT Monitoring for water pumps">IoT Monitoring for water pumps</td>
+    <td class="c-crm"><span class="crm">2026-00099</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(44)">✏️</button><button class="abt" onclick="toggleFlag(44)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,46)" ondragover="dOver(event)" ondrop="dDrop(event,46)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">21</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="STOMO Barka II DM Plant">STOMO Barka II DM Plant</td>
+    <td class="c-crm"><span class="crm">2026-00066</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(46)">✏️</button><button class="abt" onclick="toggleFlag(46)">🚩</button></div></td>
+  </tr><tr class="" draggable="true" ondragstart="dStart(event,47)" ondragover="dOver(event)" ondrop="dDrop(event,47)" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">22</span></td>
+    <td class="c-cust" style="font-weight:600">Ras Al Hamra</td>
+    <td class="c-name" title="STOMO Barka II RO Plant">STOMO Barka II RO Plant</td>
+    <td class="c-crm"><span class="crm">2026-00029</span></td>
+    <td class="c-date " style="font-family:&#39;JetBrains Mono&#39;,monospace;font-size:10.5px">—</td>
+    <td class="c-type"><span class="badge badge-BQ">BQ</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(47)">✏️</button><button class="abt" onclick="toggleFlag(47)">🚩</button></div></td>
+  </tr></tbody></table>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="mo">
+  <div class="modal">
+    <button class="xbtn" onclick="closeModal()">✕</button>
+    <h2 id="mTitle">Edit Opportunity</h2>
+    <div class="fr">
+      <div class="fg" style="flex:1.1"><label>Customer</label><input id="f_c" placeholder="e.g. Ras Al Hamra"></div>
+      <div class="fg" style="flex:2"><label>Opportunity Name</label><input id="f_n" placeholder="e.g. NORM Project"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>CRM ID</label><input id="f_id" placeholder="26-00072"></div>
+      <div class="fg"><label>Target Date</label><input id="f_d" type="date"></div>
+      <div class="fg"><label>Type</label>
+        <select id="f_t">
+          <option value="BQ">BQ — Budgetary</option>
+          <option value="JIH">JIH — Job in Hand</option>
+          <option value="Tender">Tender — Tendering</option>
+          <option value="IIoTNext">IIoTNext</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr"><label class="ftog"><input type="checkbox" id="f_f"> 🔴 Mark as High Priority</label></div>
+    <div class="mf">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn primary" onclick="saveOppty()">Save</button>
+      <button class="btn" id="delBtn" onclick="deleteOppty()" style="display: inline-flex; border-color: var(--red); color: var(--red);">Delete</button>
+    </div>
+  </div>
+</div>
+<script src="./Consyst_ Sales &amp; Pre-Sales Open Opportunity Dashboard Final draft_files/xlsx.full.min.js.download"></script>
+<script>
+let opps=[
+  {id:1,customer:"NWA Oman",name:"Muscat RCC SCADA Upgrade",crmId:"26-00085",date:"2026-07-13",type:"Tender",flag:true},
+  {id:2,customer:"NAMA Muscat",name:"SCADA System Upgrade T/2753177",crmId:"26-00103",date:"2026-08-05",type:"Tender",flag:true},
+  {id:3,customer:"Kuwait Oil Co.",name:"Sabriya-F E-SCADA 72MW",crmId:"26-00112",date:"2026-07-25",type:"Tender",flag:true},
+  {id:4,customer:"Target Engg.",name:"RTU Supply – Water Network",crmId:"26-00101",date:"2026-07-20",type:"JIH",flag:true},
+  {id:5,customer:"ADNOC UAE",name:"OT Cybersecurity Vendor Status",crmId:"26-00136",date:"2026-07-31",type:"BQ",flag:true},
+  {id:6,customer:"IIoTNext – Al Raffia",name:"IIoTNext Platform License",crmId:"26-00122",date:"2026-07-28",type:"IIoTNext",flag:true},
+  {id:7,customer:"OTTCO",name:"Tank Farm Automation Phase 2",crmId:"26-00091",date:"2026-08-15",type:"JIH",flag:false},
+  {id:8,customer:"Petrofac Oman",name:"OT Cybersecurity Assessment",crmId:"26-00094",date:"2026-07-30",type:"BQ",flag:false},
+  {id:9,customer:"Ras Al Hamra",name:"Arabinan Industries NORM Project",crmId:"26-00072",date:"2025-06-30",type:"BQ",flag:false},
+  {id:10,customer:"Technomak",name:"DAS RFQ – Data Acquisition",crmId:"26-00130",date:"2026-07-22",type:"Tender",flag:false},
+  {id:11,customer:"Honeywell India",name:"SI Partnership – Kerala Refinery",crmId:"26-00127",date:"2026-09-05",type:"JIH",flag:false},
+  {id:12,customer:"Jindal Shadeed",name:"PLC Upgrade – Rolling Mill",crmId:"26-00097",date:"2026-09-01",type:"Tender",flag:false},
+  {id:13,customer:"Petrojet Oman",name:"Wellhead Automation RTU",crmId:"26-00119",date:"2026-07-18",type:"Tender",flag:false},
+  {id:14,customer:"IIoTNext – Unimed",name:"Solen Series SMB Deployment",crmId:"26-00121",date:"2026-08-10",type:"IIoTNext",flag:false},
+  {id:15,customer:"IIoTNext – Vizag Port",name:"Port Monitoring Dashboard",crmId:"26-00134",date:"2026-09-10",type:"IIoTNext",flag:false},
+  {id:16,customer:"IIoTNext – Muscat",name:"IIoTNext Pilot – F&B Sector",crmId:"26-00142",date:"2026-09-20",type:"IIoTNext",flag:false},
+  {id:17,customer:"Biocon India",name:"IEC 62443 OT Cybersecurity",crmId:"26-00106",date:"2026-09-15",type:"BQ",flag:false},
+  {id:18,customer:"USV Pharma",name:"FDA 21 CFR Compliance – DCS",crmId:"26-00108",date:"2026-10-01",type:"BQ",flag:false},
+  {id:19,customer:"Oman LNG",name:"Historian Migration – OSIsoft",crmId:"26-00140",date:"2026-08-25",type:"JIH",flag:false},
+  {id:20,customer:"NMDC India",name:"Vendor Registration + DCS Supply",crmId:"26-00117",date:"2026-09-30",type:"BQ",flag:false},
+  {id:21,customer:"Al-Handasya Iraq",name:"Baghdad Automation JV",crmId:"26-00125",date:"2026-10-15",type:"BQ",flag:false},
+  {id:22,customer:"Gateway Electric",name:"Alba Vendor Registration",crmId:"26-00132",date:"2026-08-30",type:"BQ",flag:false},
+  {id:23,customer:"Kuwait Ministry",name:"Water SCADA Upgrade",crmId:"26-00138",date:"2026-10-20",type:"Tender",flag:false},
+  {id:24,customer:"Stomo Barka",name:"Solar BESS SCADA Integration",crmId:"26-00115",date:"2026-08-20",type:"JIH",flag:false},
+  {id:25,customer:"Bahrain Petroleum",name:"Control Room Modernization",crmId:"26-00145",date:"2026-11-01",type:"Tender",flag:false},
+];
+let nextId=26,editingId=null;
+const SPLIT=13;
+function tick(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+'  ·  '+n.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
+setInterval(tick,1000);tick();
+function daysUntil(s){const d=new Date(s),n=new Date();n.setHours(0,0,0,0);d.setHours(0,0,0,0);return Math.round((d-n)/86400000);}
+function fmtDate(s){if(!s)return'—';return new Date(s).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
+function renderStats(){
+  const c={total:opps.length,jih:0,bq:0,tender:0,iiot:0,flag:0};
+  opps.forEach(o=>{if(o.type==='JIH')c.jih++;else if(o.type==='BQ')c.bq++;else if(o.type==='Tender')c.tender++;else if(o.type==='IIoTNext')c.iiot++;if(o.flag)c.flag++;});
+  document.getElementById('statsBar').innerHTML=`<div class="stat"><span class="v" style="color:var(--text)">${c.total}</span>Total</div><div class="stat"><span class="v" style="color:var(--red)">${c.flag}</span>🔴 Priority</div><div class="stat"><span class="v" style="color:var(--green)">${c.jih}</span>JIH</div><div class="stat"><span class="v" style="color:var(--amber)">${c.bq}</span>BQ</div><div class="stat"><span class="v" style="color:var(--purple)">${c.tender}</span>Tender</div><div class="stat"><span class="v" style="color:var(--iiotnext)">${c.iiot}</span>IIoTNext</div>`;
+}
+function makeRow(o,i){
+  const days=daysUntil(o.date);let dc='',ds='';
+  if(days<0){dc='date-over';ds=' ⚠';}else if(days<=7){dc='date-warn';ds=` (${days}d)`;}
+  const rc=o.flag?'hi-pri':(o.type==='IIoTNext'?'iiot-row':'');
+  return `<tr class="${rc}" draggable="true" ondragstart="dStart(event,${o.id})" ondragover="dOver(event)" ondrop="dDrop(event,${o.id})" ondragleave="dLeave(event)" ondragend="dEnd(event)">
+    <td class="c-sl"><span class="sl">${i+1}</span></td>
+    <td class="c-cust" style="font-weight:600">${o.customer}</td>
+    <td class="c-name" title="${o.name}">${o.name}</td>
+    <td class="c-crm"><span class="crm">${o.crmId}</span></td>
+    <td class="c-date ${dc}" style="font-family:'JetBrains Mono',monospace;font-size:10.5px">${fmtDate(o.date)}${ds}</td>
+    <td class="c-type"><span class="badge badge-${o.type}">${o.type}</span></td>
+    <td class="c-act"><div class="row-actions"><button class="abt" onclick="openEdit(${o.id})">✏️</button><button class="abt" onclick="toggleFlag(${o.id})">${o.flag?'🏳':'🚩'}</button></div></td>
+  </tr>`;
+}
+function renderBoard(){
+  document.getElementById('tbodyA').innerHTML=opps.slice(0,SPLIT).map((o,i)=>makeRow(o,i)).join('');
+  document.getElementById('tbodyB').innerHTML=opps.slice(SPLIT).map((o,i)=>makeRow(o,i+SPLIT)).join('');
+  document.querySelector('#colA .col-label').textContent=`◀  Priority 1–${SPLIT}`;
+  document.querySelector('#colB .col-label').textContent=`▶  Priority ${SPLIT+1}–${opps.length}`;
+  renderStats();
+}
+let dragId=null;
+function dStart(e,id){dragId=id;e.target.closest('tr').classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function dOver(e){e.preventDefault();e.target.closest('tr')?.classList.add('drag-over');}
+function dLeave(e){e.target.closest('tr')?.classList.remove('drag-over');}
+function dEnd(){document.querySelectorAll('.dragging,.drag-over').forEach(r=>r.classList.remove('dragging','drag-over'));}
+function dDrop(e,tid){e.preventDefault();dLeave(e);if(dragId===tid)return;const fi=opps.findIndex(o=>o.id===dragId),ti=opps.findIndex(o=>o.id===tid);if(fi<0||ti<0)return;const[item]=opps.splice(fi,1);opps.splice(ti,0,item);renderBoard();}
+function openModal(){editingId=null;document.getElementById('mTitle').textContent='Add Opportunity';document.getElementById('delBtn').style.display='none';['f_c','f_n','f_id','f_d'].forEach(id=>document.getElementById(id).value='');document.getElementById('f_t').value='BQ';document.getElementById('f_f').checked=false;document.getElementById('mo').classList.add('open');}
+function openEdit(id){const o=opps.find(x=>x.id===id);if(!o)return;editingId=id;document.getElementById('mTitle').textContent='Edit Opportunity';document.getElementById('delBtn').style.display='inline-flex';document.getElementById('f_c').value=o.customer;document.getElementById('f_n').value=o.name;document.getElementById('f_id').value=o.crmId;document.getElementById('f_d').value=o.date;document.getElementById('f_t').value=o.type;document.getElementById('f_f').checked=o.flag;document.getElementById('mo').classList.add('open');}
+function closeModal(){document.getElementById('mo').classList.remove('open');}
+function saveOppty(){const o={customer:document.getElementById('f_c').value.trim(),name:document.getElementById('f_n').value.trim(),crmId:document.getElementById('f_id').value.trim(),date:document.getElementById('f_d').value,type:document.getElementById('f_t').value,flag:document.getElementById('f_f').checked};if(!o.customer||!o.name){alert('Customer and Opportunity Name are required.');return;}if(editingId){const idx=opps.findIndex(x=>x.id===editingId);opps[idx]={...opps[idx],...o};}else opps.push({id:nextId++,...o});closeModal();renderBoard();}
+function deleteOppty(){if(!editingId||!confirm('Delete this opportunity?'))return;opps=opps.filter(o=>o.id!==editingId);closeModal();renderBoard();}
+function toggleFlag(id){const o=opps.find(x=>x.id===id);if(o){o.flag=!o.flag;renderBoard();}}
+function exportExcel(){const rows=opps.map((o,i)=>({'Priority':i+1,'Customer':o.customer,'Opportunity Name':o.name,'CRM ID':o.crmId,'Target Date':o.date,'Type':o.type,'High Priority (YES/NO)':o.flag?'YES':'NO'}));const ws=XLSX.utils.json_to_sheet(rows);ws['!cols']=[{wch:8},{wch:22},{wch:42},{wch:12},{wch:14},{wch:12},{wch:22}];const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Opportunities');XLSX.writeFile(wb,`Consyst_Opportunities_${new Date().toISOString().slice(0,10)}.xlsx`);}
+function importTrigger(){document.getElementById('importFile').click();}
+function importExcel(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'binary'});const ws=wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(ws);if(!rows.length){alert('No data found.');return;}opps=rows.map(r=>({id:nextId++,customer:String(r['Customer']||'').trim(),name:String(r['Opportunity Name']||'').trim(),crmId:String(r['CRM ID']||'').trim(),date:r['Target Date']||'',type:String(r['Type']||'BQ').trim(),flag:String(r['High Priority (YES/NO)']||'').toUpperCase()==='YES'})).filter(o=>o.customer&&o.name);renderBoard();alert(`✅ Loaded ${opps.length} opportunities.`);}catch{alert('Could not read Excel file.');}};r.readAsBinaryString(file);e.target.value='';}
+document.getElementById('mo').addEventListener('click',function(e){if(e.target===this)closeModal();});
+renderBoard();
+</script>
+
+
+</body></html>
